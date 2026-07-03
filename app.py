@@ -2,19 +2,12 @@ import streamlit as st
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
-import json  # <- ADICIONADO AQUI
 
+# --- CONFIGURAÇÃO DA API DO GOOGLE SHEETS ---
 escopo = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
 try:
-    if "gcp_json" in st.secrets:
-        # Modo Nuvem: Lê o JSON bruto diretamente da memória e converte
-        info_chaves = json.loads(st.secrets["gcp_json"])
-        credenciais = ServiceAccountCredentials.from_json_keyfile_dict(info_chaves, escopo)
-    else:
-        # Modo Local: Lê o arquivo no seu computador
-        credenciais = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", escopo)
-        
+    credenciais = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", escopo)
     cliente = gspread.authorize(credenciais)
 except Exception as e:
     st.error(f"Erro nas credenciais: {e}")
@@ -31,6 +24,7 @@ except Exception as e:
     st.stop()
 
 
+# --- INTERFACE VIZUAL ---
 st.set_page_config(page_title="Finanças DAAM", page_icon="💰", layout="centered")
 
 st.markdown("<h1 style='text-align: center; color: #4CAF50;'> Sistema de Caixa DAAM</h1>", unsafe_allow_html=True)
@@ -101,7 +95,7 @@ with aba_fech:
     st.markdown("### Fechamento de Caixa Semanal")
     
     with st.form("form_fechamento", clear_on_submit=True):
-        operador_fech = st.selectbox("Quem está fechando o caixa?", ["Israel", "Rebeca", "Lais", "Agoslindo"])
+        operador_fech = st.selectbox("Quem está fechando o caixa?", ["Israel", "Membro 2", "Membro 3", "Membro 4"])
         
         col4, col5 = st.columns(2)
         with col4:
