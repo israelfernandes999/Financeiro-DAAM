@@ -2,18 +2,17 @@ import streamlit as st
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
 from datetime import datetime
+import json  # <- ADICIONADO AQUI
 
-# --- CONFIGURAÇÃO DA API DO GOOGLE SHEETS ---
 escopo = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
 
-# NOVA LÓGICA: Se estiver rodando local procurará o arquivo; se estiver na nuvem usará st.secrets
 try:
-    if "gcp_service_account" in st.secrets:
-        # Modo Nuvem (Streamlit Cloud)
-        info_chaves = dict(st.secrets["gcp_service_account"])
+    if "gcp_json" in st.secrets:
+        # Modo Nuvem: Lê o JSON bruto diretamente da memória e converte
+        info_chaves = json.loads(st.secrets["gcp_json"])
         credenciais = ServiceAccountCredentials.from_json_keyfile_dict(info_chaves, escopo)
     else:
-        # Modo Local (Seu computador)
+        # Modo Local: Lê o arquivo no seu computador
         credenciais = ServiceAccountCredentials.from_json_keyfile_name("credentials.json", escopo)
         
     cliente = gspread.authorize(credenciais)
